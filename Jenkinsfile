@@ -25,24 +25,23 @@
           branch 'PR-*'
         }
         environment {
-          PREVIEW_VERSION = "$PROJECT_VERSION-$BRANCH_NAME-$BUILD_NUMBER"
+          VERSION = "$PROJECT_VERSION-$BRANCH_NAME-$BUILD_NUMBER"
           PREVIEW_NAMESPACE = "$APP_NAME-$BRANCH_NAME".toLowerCase()
           HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
         }
         steps {
           container('maven') {
-            sh "mvn versions:set -DnewVersion=$PREVIEW_VERSION"
+            sh "mvn versions:set -DnewVersion=$VERSION"
             sh "mvn install"
 
-            // sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
+            sh "docker build -t $(DOCKER_REGISTRY)/$(ORG)/$(APP_NAME):$(VERSION) ."
+            // skip pushing docker image for now
+            //sh "export VERSION=$VERSION && skaffold build -f skaffold.yaml"
+            //sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$VERSION"
 
-            // skip building docker image for now
-            // sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
-
-
-             //dir("./charts/$APP_NAME") {
-             //  sh "make build"
-             //}
+            dir("./charts/$APP_NAME") {
+              sh "make preview"
+            }
           }
         }
       }

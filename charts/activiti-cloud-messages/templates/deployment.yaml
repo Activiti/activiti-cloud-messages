@@ -1,0 +1,4 @@
+{{- template "common.deployment" (list . "activiti.messages.deployment") -}}
+{{- define "activiti.messages.deployment" -}}
+
+{{- end -}}
