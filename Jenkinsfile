@@ -12,10 +12,8 @@
     environment {
       ORG               = 'activiti'
       APP_NAME          = 'activiti-cloud-messages'
-
-      RELEASE_VERSION     = jx_release_version()
-      PROJECT_VERSION     = maven_project_version()      
-
+      CHARTMUSEUM_CREDS   = credentials('jenkins-x-chartmuseum')
+      RELEASE_BRANCH    = "master"
       GITHUB_CHARTS_REPO    = "https://github.com/Activiti/activiti-cloud-helm-charts.git"
       GITHUB_HELM_REPO_URL = "https://activiti.github.io/activiti-cloud-helm-charts/"
     }
@@ -25,6 +23,7 @@
           branch 'PR-*'
         }
         environment {
+          PROJECT_VERSION     = maven_project_version()      
           VERSION = "$PROJECT_VERSION".replaceAll("SNAPSHOT","$BRANCH_NAME-$BUILD_NUMBER-SNAPSHOT")
           PREVIEW_NAMESPACE = "$APP_NAME-$BRANCH_NAME".toLowerCase()
           HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
@@ -46,16 +45,16 @@
       }
       stage('Build Release') {
         when {
-          branch 'master'
+          branch "$RELEASE_BRANCH"
         }
         environment {
-          VERSION = "$RELEASE_VERSION"
+          VERSION = jx_release_version()
         }
         
         steps {
           container('maven') {
             // ensure we're not on a detached head
-            sh "git checkout master"
+            sh "git checkout $RELEASE_BRANCH"
             sh "git config --global credential.helper store"
 
             sh "jx step git credentials"
