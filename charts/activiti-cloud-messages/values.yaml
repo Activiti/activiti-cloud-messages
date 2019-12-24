@@ -24,6 +24,27 @@ global:
   gateway:
     host: ""
 
+db:
+  uri:
+  username:
+  password:
+  driver:
+  platform:
+  generateDdl:
+  ddlAuto:
+
+postgres:
+  enabled: true
+  name: postgres
+  port: 5432
+  username: postgres
+  password:
+
+init:
+  container:
+    image: alpine:3.8
+    imagePullPolicy: IfNotPresent  
+
 ## Allows the specification of additional environment variables
 extraEnv: |
   # - name: ACT_KEYCLOAK_URL
@@ -82,7 +103,7 @@ ingress:
   tls: false
 
   ## If TLS is set to true, you must declare what secret will store the key/certificate for TLS
-  tlsSecret: 
+  tlsSecret: ""
 
   ## Ingress annotations done as key:value pairs
   annotations: {}
@@ -95,19 +116,5 @@ ingress:
 extraVolumes: |
 extraVolumeMounts: |
 
-db:
-  uri:
-  username:
-  password:
-  driver:
-  platform:
-  generateDdl:
-  ddlAuto:
-
-postgres:
-  enabled: false
-  name: postgres
-  port: 5432
-  username: postgres
-  password:
-
+## Additional init containers, e. g. to wait for a db or SSO
+extraInitContainers: |
