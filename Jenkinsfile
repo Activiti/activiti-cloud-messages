@@ -25,7 +25,7 @@
           branch 'PR-*'
         }
         environment {
-          VERSION = "$PROJECT_VERSION".replaceAll("SNAPSHOT","$BRANCH_NAME-SNAPSHOT")
+          VERSION = "$PROJECT_VERSION".replaceAll("SNAPSHOT","$BRANCH_NAME-$BUILD_NUMBER-SNAPSHOT")
           PREVIEW_NAMESPACE = "$APP_NAME-$BRANCH_NAME".toLowerCase()
           HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
         }
