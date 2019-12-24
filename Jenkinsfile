@@ -34,9 +34,8 @@
             sh "mvn versions:set -DnewVersion=$VERSION"
             sh "mvn install"
 
-            sh "docker build -t $DOCKER_REGISTRY/$ORG/$APP_NAME:$VERSION ."
-            // skip pushing docker image for now
-            //sh "export VERSION=$VERSION && skaffold build -f skaffold.yaml"
+            // sh "docker build -t $DOCKER_REGISTRY/$ORG/$APP_NAME:$VERSION ."
+            sh "export VERSION=$VERSION && skaffold build -f skaffold.yaml"
             //sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$VERSION"
 
             dir("./charts/$APP_NAME") {
