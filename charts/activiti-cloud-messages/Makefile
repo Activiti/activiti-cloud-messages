@@ -1,3 +1,4 @@
+CHART_REPO := $(or $(CHART_REPO),jenkins-x-chartmuseum:8080)
 CURRENT=$(shell pwd)
 NAME := $(or $(APP_NAME),$(CURRENT))
 ORG := $(or $(ORG),activiti)
@@ -16,10 +17,17 @@ build: clean
 	helm dependency build
 	helm lint
 
-preview: build
+dry-run: 
 	helm upgrade ${HELM_RELEASE} . --install --debug --dry-run
 
-install:  build
+$(NAME)-$(VERSION).tgz: build
+	helm package .
+
+package: $(NAME)-$(VERSION).tgz
+
+preview: version package dry-run release
+
+install: build
 	helm upgrade ${HELM_RELEASE} . --install
 
 upgrade: clean build
@@ -33,10 +41,9 @@ clean:
 	rm -rf charts
 	rm -rf ${NAME}*.tgz
 
-release: build
-	helm package .
-#	curl  -u $(CHARTMUSEUM_CREDS_USR):$(CHARTMUSEUM_CREDS_PSW) --data-binary "@$(NAME)-$(shell sed -n 's/^version: //p' Chart.yaml).tgz" $(CHART_REPO)/api/charts
-#	rm -rf ${NAME}*.tgz%
+release: package
+	curl  -u $(CHARTMUSEUM_CREDS_USR):$(CHARTMUSEUM_CREDS_PSW) --data-binary "@$(NAME)-$(VERSION).tgz" $(CHART_REPO)/api/charts
+	rm -rf ${NAME}*.tgz%
 
 github:
 	$(eval GITHUB_CHARTS_DIR := $(shell basename $(GITHUB_CHARTS_REPO) .git))
@@ -51,11 +58,12 @@ github:
 	   git push origin "$(GITHUB_CHARTS_BRANCH)"
 	rm -rf $(GITHUB_CHARTS_DIR)
 
-tag:
+version: 
 	sed -i -e "s/version:.*/version: $(VERSION)/" Chart.yaml
 	sed -i -e "s|repository: .*|repository: $(DOCKER_REGISTRY)/$(ORG)/$(NAME)|" values.yaml
 	sed -i -e "s/tag: .*/tag: $(VERSION)/" values.yaml
 
+tag: version
 	git add --all
 	git commit -m "release $(VERSION)" --allow-empty # if first release then no verion update is performed
 	git tag -fa v$(VERSION) -m "Release version $(VERSION)"
