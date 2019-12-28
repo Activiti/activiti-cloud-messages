@@ -47,7 +47,7 @@ release: package
 
 github:
 	$(eval GITHUB_CHARTS_DIR := $(shell basename $(GITHUB_CHARTS_REPO) .git))
-	[[ -d $(GITHUB_CHARTS_DIR) ]] ||git clone -b "$(GITHUB_CHARTS_BRANCH)" "$(GITHUB_CHARTS_REPO)" $(GITHUB_CHARTS_DIR)
+	[[ -d $(GITHUB_CHARTS_DIR) ]] || git clone -b "$(GITHUB_CHARTS_BRANCH)" "$(GITHUB_CHARTS_REPO)" $(GITHUB_CHARTS_DIR)
 	cp "$(NAME)-$(VERSION).tgz" $(GITHUB_CHARTS_DIR)
 	cd $(GITHUB_CHARTS_DIR) && \
 	   helm repo index . && \
@@ -72,15 +72,11 @@ tag: version
 updatebot/push-version: 
 	@echo Resolving push versions for artifacts........
 	$(eval ACTIVITI_CLOUD_MESSAGES_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-messages-service.version -q -DforceStdout -f ../../pom.xml))
-	$(eval MAVEN_VERSIONS=org.activiti.cloud.messages:activiti-cloud-messages-dependencies $(ACTIVITI_CLOUD_MESSAGES_VERSION) org.activiti.cloud.examples:activiti-cloud-messages $(VERSION))
-	$(eval HELM_VERSIONS=ACTIVITI_CLOUD_MESSAGES_VERSION $(VERSION))
+	$(eval MAVEN_VERSIONS=org.activiti.cloud.examples:activiti-cloud-messages $(VERSION) org.activiti.cloud.messages:activiti-cloud-messages-dependencies $(ACTIVITI_CLOUD_MESSAGES_VERSION))
 
 	@echo Doing updatebot push-version.....
-
 	for number in 1 2; do \
-		cd ../../; \
-		updatebot push-version --kind maven $(MAVEN_VERSIONS); \ 
-		updatebot push-version --kind make  $(HELM_VERSIONS); \
-		rm -rf .updatebot-repos/; \
+		updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS); \ 
+		rm -rf ../../.updatebot-repos/; \
 		sleep $$[ ( $$RANDOM % 10 )  + 1 ]s; \
 	done
