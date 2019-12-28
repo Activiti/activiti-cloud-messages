@@ -8,11 +8,16 @@ spec:
         - name: wait-for-postgresql
           image: {{ .Values.init.container.image | quote }}
           imagePullPolicy: {{ .Values.init.container.imagePullPolicy }}
+          env:
+            - name: POSTGRES_NAME
+              value: {{ printf "%s-%s" .Release.Name .Values.postgres.name | quote }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.postgres.port | quote }}
           command:
             - sh
             - -c
             - |
-              until printf "." && nc -z -w 2 {{ .Release.Name }}-{{ .Values.postgres.name }} {{ .Values.postgres.port }}; do
+              until printf "." && nc -z -w 2 $POSTGRES_NAME $POSTGRES_PORT; do
                   sleep 2;
               done;
               echo 'PostgreSQL OK ✓'
@@ -22,7 +27,7 @@ spec:
           image: {{ .Values.init.container.image | quote }}
           imagePullPolicy: {{ .Values.init.container.imagePullPolicy }}
           env: 
-            - name: RABBITMQ_HOST
+            - name: RABBITMQ_NAME
               value: {{ include "activiti.messages.rabbitmq-name" . | quote }}
             - name: RABBITMQ_PORT
               value: {{ include "activiti.messages.rabbitmq-port" . | quote }}
@@ -30,7 +35,7 @@ spec:
             - sh
             - -c
             - |
-              until printf "." && nc -z -w 2 $RABBITMQ_HOST $RABBITMQ_PORT; do
+              until printf "." && nc -z -w 2 $RABBITMQ_NAME $RABBITMQ_PORT; do
                   sleep 2;
               done;
               echo 'RabbitMq OK ✓'
