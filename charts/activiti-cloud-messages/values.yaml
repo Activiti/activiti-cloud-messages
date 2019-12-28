@@ -40,6 +40,11 @@ postgres:
   username: postgres
   password:
 
+rabbitmq:
+  enabled: true
+  name: "{{ .Release.Name }}-rabbitmq" 
+  port: 5672
+  
 init:
   container:
     image: alpine:3.8
@@ -71,12 +76,9 @@ service:
     fabric8.io/expose: "false"
     fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx"
 resources:
-  limits:
-    cpu: 1
-    memory: 1024Mi
   requests:
-    cpu: 150m
-    memory: 256Mi
+    cpu: 250m
+    memory: 1024Mi
 probePath: '/actuator/health'
 livenessProbe:
   initialDelaySeconds: 60
