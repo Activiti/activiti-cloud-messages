@@ -76,7 +76,7 @@ updatebot/push-version:
 
 	@echo Doing updatebot push-version.....
 	for number in 1 2; do \
-		updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS); \ 
+		updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS); \
 		rm -rf ../../.updatebot-repos/; \
 		sleep $$[ ( $$RANDOM % 10 )  + 1 ]s; \
 	done
