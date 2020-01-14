@@ -65,8 +65,8 @@ javaOpts:
 # only set this variable if a private registry secret is needed to pull the image
 #registryPullSecrets: private-registry-secret
 image:
-  repository: activiti/activiti-cloud-messages
-  tag: develop
+  repository: docker.io/activiti/activiti-cloud-messages
+  tag: 7.1.6
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
