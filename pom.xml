@@ -20,7 +20,7 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <activiti-cloud-messages-service.version>7.1.12</activiti-cloud-messages-service.version>
+    <activiti-cloud-messages-service.version>7.1.13</activiti-cloud-messages-service.version>
   </properties>
   <dependencyManagement>
     <dependencies>
