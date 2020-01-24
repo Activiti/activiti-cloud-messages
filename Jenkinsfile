@@ -109,7 +109,7 @@
            slackSend(
              channel: "#activiti-community-builds",
              color: "danger",
-             message: "$$BUILD_URL"
+             message: "$BUILD_URL"
            )
         } 
         always {
